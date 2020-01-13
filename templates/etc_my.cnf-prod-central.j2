@@ -1,0 +1,128 @@
+[mysqld]
+###################
+###################
+###################
+
+skip-slave-start=1
+port= {{ mysql_port }}
+
+##################
+##################
+##################
+
+datadir={{ mysql_datadir }}
+socket=/var/lib/mysql/mysql.sock
+#old_passwords=1
+#secure_auth=0
+log_error={{ mysql_log_error }}
+performance_schema={{ mysql_performance_schema }}
+sql_mode='{{ mysql_sql_mode }}'
+show_compatibility_56={{ mysql_show_compatibility_56 }}
+optimizer_switch=index_merge=on,index_merge_union=on,index_merge_sort_union=on,index_merge_intersection=on,engine_condition_pushdown=on,index_condition_pushdown=on,mrr=on,mrr_cost_based=on,block_nested_loop=on,batched_key_access=off,materialization=on,semijoin=on,loosescan=on,firstmatch=on,duplicateweedout=on,subquery_materialization_cost_based=on,use_index_extensions=on,condition_fanout_filter=on,derived_merge=off
+tmpdir={{ mysql_tmpdir }}
+
+# Replication Setup
+log-bin={{ mysql_log_bin }}
+binlog_format = {{ mysql_binlog_format }}
+
+replicate_ignore_db = operations
+replicate_ignore_db = external_analysis
+expire_logs_days=14
+
+server-id = 6
+auto_increment_increment = 10
+auto_increment_offset = 6
+
+replicate-same-server-id = {{ mysql_replicate_same_server_id }}
+{{ mysql_log_slave_updates }}
+
+#### Altered from 1500 to 2000 on 2015-07-13
+#### Altered from 2000 to 3000 on 2016-01-18 
+#### Altered from 3000 to 4000 on 2016-02-11
+max_connections = {{ mysql_max_connections }}
+open_files_limit = {{ mysql_open_files_limit }}
+
+### copied from prodsql01 config - 2015-07-13
+innodb_stats_sample_pages={{ mysql_innodb_stats_sample_pages }}
+
+myisam_repair_threads = {{ mysql_myisam_repair_threads }}
+#myisam_recover
+
+## added 2009-12-20 
+innodb_flush_log_at_trx_commit={{ mysql_innodb_flush_log_at_trx_commit }}
+innodb_autoextend_increment={{ mysql_innodb_autoextend_increment }}
+innodb_log_file_size={{ mysql_innodb_log_file_size }}
+
+ ## added 2011-03-19
+{{ mysql_innodb_file_per_table }}
+innodb_open_files={{ mysql_innodb_open_files }}
+
+## added 2015-08-25
+#innodb_lazy_drop_table = 1
+
+## added 2012-03-16 
+innodb_flush_method={{ mysql_innodb_flush_method }}
+
+thread_cache_size={{ mysql_thread_cache_size }}
+query_cache_size={{ mysql_query_cache_size }}
+query_cache_limit={{ mysql_query_cache_limit }}
+
+max_heap_table_size ={{ mysql_max_heap_table_size }} 
+tmp_table_size = {{ mysql_tmp_table_size }}
+
+#### Altered from 256G to 208G on 2016-09-30
+innodb_buffer_pool_size = {{ mysql_innodb_buffer_pool_size }}
+#innodb_additional_mem_pool_size = 128M
+
+#### Added on 2016-02-11
+innodb_buffer_pool_instances={{ mysql_innodb_buffer_pool_instances }}
+
+binlog_cache_size = {{ mysql_innodb_binlog_cache_size }}
+
+wait_timeout = {{ mysql_innodb_wait_timeout }}
+
+{{ mysql_slow_query_log }}
+slow_query_log_file = {{ mysql_slow_query_log_file }}
+long_query_time = {{ mysql_long_query_time }}
+
+## added 2015-08-24
+log_slow_admin_statements = {{ mysql_log_slow_admin_statements }}
+
+##added 2012-03-24
+general_log_file = {{ mysql_general_log_file }}
+
+max_allowed_packet = {{ mysql_max_allowed_packet }}
+
+### Added 2015-07-13 based on observed activity on prodsql01 from 2015-7-10 -> 2015-07-13
+table_definition_cache = {{ mysql_table_definition_cache }}
+table_open_cache = {{ mysql_table_open_cache }}
+
+#### Added to solidify as a stanard, the temporary work around to prevent sourcetrak servers which loop thru all available ports before disconnect from being blocked 2015-07-13
+max_connect_errors = {{ mysql_max_connect_errors }}
+
+### Added because we turned off multiplexing and it caused issues
+max_prepared_stmt_count= {{ mysql_max_prepared_stmt_count }}
+
+#### Add the logging of connection failures just to watch the above 2015-07-13
+log_warnings = {{ mysql_log_warnings }}
+
+# SSL 
+ssl-ca=/etc/mysql-ssl/ca-cert.pem
+ssl-cert=/etc/mysql-ssl/server-cert.pem
+ssl-key=/etc/mysql-ssl/server-key.pem
+
+[mysql.server]
+user=mysql
+basedir=/usr
+port={{ mysql_port }}
+
+[mysqld_safe]
+err-log= {{ mysql_safe_err_log }}
+pid-file=/var/run/mysqld/mysqld.pid
+port={{ mysql_port }}
+
+[mysqldump]
+quick
+max_allowed_packet = {{ mysql_mysqldump_max_allowed_packet }}
+port={{ mysql_port }}
+

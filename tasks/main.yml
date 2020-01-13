@@ -1,0 +1,22 @@
+---
+- include: install-mysql.yml
+  tags: install
+
+- include: configure-mysql.yml
+  tags: configure
+
+- include: restart-after-config-change.yml
+  tags: restart
+
+- include: secure-mysql-after-install.yml
+  tags: secure
+
+- include: databases.yml
+  tags: databases
+
+- include: users.yml
+  tags: users
+
+- include: uninstall-mysql.yml
+  tags: uninstall
+  when: ansible_os_family == "RedHat"

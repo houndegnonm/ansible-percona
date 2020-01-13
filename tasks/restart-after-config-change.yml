@@ -1,0 +1,18 @@
+---
+- name: "Ensure that percona is running and enabled"
+  service:
+    name: "mysqld"
+    state: "started"
+    enabled: "yes"
+  register: mysql_service
+
+# This service restart is needed when changing default mysql_datadir, mysql_native_password
+# and other settings. So better restart when the my.cnf file changes
+# Restart when my.cnf has changed and it has not been restarted by the above task
+- name: "Restart mysql to apply changes done in my.cnf file"
+  service:
+    name: "mysqld"
+    state: "restarted"
+  when:
+    - mysql_service is defined
+    - not mysql_service.changed

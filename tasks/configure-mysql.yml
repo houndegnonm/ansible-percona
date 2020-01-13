@@ -1,0 +1,16 @@
+---
+
+#- name: "Create language dir symlink"
+#  file:
+#    src: "/usr/share/percona-server"
+#    dest: "/usr/share/mysql"
+#    state: "link"
+
+- name: "Update the my.cnf"
+  template:
+    src: "etc_my.cnf-prod-central.j2"
+    dest: "/etc/my.cnf"
+    owner: "root"
+    mode: 0644
+  register: "config_file"
+

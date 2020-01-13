@@ -1,0 +1,73 @@
+---
+########## GLOBAL VARIABLES FOR ALL STEPS -  Version to install, defaulting to 5.7
+mysql_version_major: "5"
+mysql_version_minor: "7"
+mysql_version: "{{ mysql_version_major|int }}.{{ mysql_version_minor|int }}"
+
+########## Variables below are used during the Install tasks
+mysql_root_password: "DV14H@rrison"
+mysql_port: "3310"
+mysql_datadir: "/var/lib/mysql"
+mysql_log_dir: "/var/log/mysql/"
+mysql_log_bin_dir: "/var/log/mysql_binlogs/"
+mysql_log_error: "{{mysql_log_dir}}/prodsql_error.log"
+mysql_tmpdir: "/mysql_tmpdir"
+mysql_log_bin: "{{mysql_log_bin_dir}}/prodsql-mysqlbin"
+mysql_slow_query_log_file: "{{ mysql_log_dir }}/mysql-slow-query.log"
+mysql_general_log_file: "{{ mysql_log_dir }}/prodsql_query.log"
+mysql_safe_err_log: "{{ mysql_log_dir }}/prodsql-mysqld.log"
+
+######## Variables below are used during the configure task
+#replication
+mysql_binlog_format: "MIXED"
+mysql_replicate_same_server_id: "0"
+mysql_log_slave_updates: "log_slave_updates"
+
+# Fine tuning
+mysql_performance_schema: "OFF"
+mysql_sql_mode: "NO_ENGINE_SUBSTITUTION,ALLOW_INVALID_DATES"
+mysql_show_compatibility_56: "ON"
+mysql_max_connections: "5000"
+mysql_open_files_limit: "5000"
+mysql_innodb_stats_sample_pages: "24"
+mysql_myisam_repair_threads: "4"
+
+mysql_innodb_flush_log_at_trx_commit: "2"
+mysql_innodb_autoextend_increment: "128"
+mysql_innodb_log_file_size: "1024M"
+mysql_innodb_file_per_table: "innodb_file_per_table"
+mysql_innodb_open_files: "700"
+mysql_innodb_flush_method: "O_DIRECT"
+
+mysql_thread_cache_size: "150"
+mysql_query_cache_size: "35MB"
+mysql_query_cache_limit: "1228K"
+
+mysql_max_heap_table_size: "320MB"
+mysql_tmp_table_size: "256MB"
+
+mysql_innodb_buffer_pool_size: "128M"
+mysql_innodb_buffer_pool_instances: "8"
+mysql_innodb_binlog_cache_size: "2M"
+mysql_innodb_wait_timeout: "144000"
+
+mysql_slow_query_log: "slow_query_log"
+mysql_long_query_time: "2"
+mysql_log_slow_admin_statements: "1"
+
+mysql_max_allowed_packet: "64M"
+mysql_table_definition_cache: "512"
+mysql_table_open_cache: "1024"
+mysql_max_connect_errors: "12000"
+mysql_max_prepared_stmt_count: "327640"
+mysql_log_warnings: "2"
+mysql_mysqldump_max_allowed_packet: "32M"
+
+# ansible vars:
+mysql_databases: ["mike", "mike2"]
+mysql_users: []
+
+install_rpm_repositories: "true"
+
+
+

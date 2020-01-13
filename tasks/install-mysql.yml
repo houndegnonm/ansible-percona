@@ -1,0 +1,76 @@
+---
+- name: "Add Percona yum repository"
+  yum:
+    name: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+    state: present
+  when: install_rpm_repositories|bool
+
+# https://www.percona.com/doc/percona-server/LATEST/installation/yum_repo.html
+- name: "Enable Percona repository (Percona version >= 8)"
+  command: "percona-release setup ps{{ mysql_version_major }}{{ mysql_version_minor }}"
+  when: mysql_version_major|int >= 8 and install_rpm_repositories|bool
+ 
+- name: "Install Percona-Server, percona-toolkit, percona-xtrabackup (Percona version < 8)"
+  yum:
+    name: 
+      - "Percona-Server-server-{{mysql_version_major}}{{mysql_version_minor}}"
+      - "Percona-Server-client-{{mysql_version_major}}{{mysql_version_minor}}"
+      - "Percona-Server-devel-{{mysql_version_major}}{{mysql_version_minor}}"
+      - "percona-toolkit"
+      - "percona-xtrabackup"
+    state: present
+  when: mysql_version_major|int < 8
+
+- name: "Install Percona-Server, percona-toolkit, percona-xtrabackup (Percona version >= 8)"
+  yum:
+    name: 
+      - "percona-server-server-{{mysql_version_major}}.{{mysql_version_minor}}*"
+      - "percona-server-client-{{mysql_version_major}}.{{mysql_version_minor}}*"
+      - "percona-server-devel-{{mysql_version_major}}.{{mysql_version_minor}}*"
+      - "percona-toolkit"
+      - "percona-xtrabackup"
+    state: present
+  when: mysql_version_major|int >= 8
+
+- name: "Install MySQL-python package"
+  yum:
+    name: "MySQL-python"
+    state: present
+
+- name: "Adjust permissions of datadir"
+  file:
+    path: "{{mysql_datadir}}"
+    owner: "mysql"
+    group: "mysql"
+    mode: 0755
+    state: "directory"
+
+- name: "Create MySQL log dir"
+  file:
+    path: "{{ item }}"
+    owner: "mysql"
+    group: "mysql"
+    mode: 0755
+    state: "directory"
+  with_items:
+    - "{{ mysql_log_dir }}"
+    - "{{ mysql_log_bin_dir }}"
+    - "{{ mysql_tmpdir }}"
+
+- name: "Create MySQL log file"
+  file:
+    path: "{{ item }}"
+    owner: "mysql"
+    group: "mysql"
+    mode: 0755
+    state: "touch"
+  with_items:
+    - "{{ mysql_log_error }}"
+    - "{{ mysql_slow_query_log_file }}"
+    - "{{ mysql_general_log_file }}"
+    - "{{ mysql_safe_err_log }}"
+
+- name: "Start mysql for the first time"
+  service:
+    name: "mysqld"
+    state: "started"
